@@ -46,8 +46,9 @@ create function http_delete returns string soname 'mysql-udf-http.so';
 /*
     Create the libmysqludf_humanage libmysqludf_urlencode UDF function in the MySQL
 */
-create function HUMANAGE;
-create function URLENCODE;
+create function humanage;
+create function urlencode;
 
-create function HUMANAGE returns string soname 'libmysqludf_humanage.so';
-create function URLENCODE returns string soname 'libmysqludf_urlencode.so';
+create function humanage returns string soname 'libmysqludf_humanage.so';
+create function urlencode returns string soname 'libmysqludf_urlencode.so';
+create function urldecode returns string soname 'libmysqludf_urldecode.so';
