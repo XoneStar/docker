@@ -17,7 +17,7 @@ RUN cd /tmp/mysql-udf-http-1.0 && \
     make && make install
 
 RUN cd /tmp/mysql-udf-json && \
-    gcc $(/usr/bin/mysql_config --cflags) -shared -fPIC -o build/lib_mysqludf_json.so lib_mysqludf_json.c
+    gcc $(/usr/bin/mysql_config --cflags) -shared -fPIC -o lib_mysqludf_json.so lib_mysqludf_json.c
 
 
 FROM mysql:5.7
@@ -28,6 +28,6 @@ RUN apt update && apt install -y libcurl4-openssl-dev && apt clean all
 
 COPY --from=build-mysql /tmp/lib_mysqludf_urlencode/build/lib/ /usr/lib/mysql/plugin/
 COPY --from=build-mysql /tmp/mysql-udf-http-1.0/build/lib/mysql/plugin/ /usr/lib/mysql/plugin/
-COPY --from=build-mysql /tmp/mysql-udf-json/build/ /usr/lib/mysql/plugin/
+COPY --from=build-mysql /tmp/mysql-udf-json/lib_mysqludf_json.so /usr/lib/mysql/plugin/
 
 COPY ./init.sql /docker-entrypoint-initdb.d/
