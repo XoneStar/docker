@@ -1,10 +1,12 @@
 FROM golang
 
-COPY librdkafka-1.3.0.tar.gz /tmp
+ARG VERSION=1.3.0
 
-RUN cd /tmp && tar -zxvf librdkafka-1.3.0.tar.gz && \
-cd librdkafka-1.3.0 && ./configure --install-deps
+COPY librdkafka-${VERSION}.tar.gz /tmp
 
-RUN cd /tmp/librdkafka-1.3.0 && /make && make install && ldconfig
+RUN cd /tmp && tar -zxvf librdkafka-${VERSION}.tar.gz && \
+cd librdkafka-${VERSION} && ./configure --install-deps
 
-RUN rm -rf /tmp/librdkafka-1.3.0.tar.gz /tmp/librdkafka-1.3.0
+RUN cd /tmp/librdkafka-${VERSION} && /make && make install && ldconfig
+
+RUN rm -rf /tmp/librdkafka-${VERSION}.tar.gz /tmp/librdkafka-${VERSION}
