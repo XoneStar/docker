@@ -7,10 +7,10 @@ ARG SSL_PASS="kafka@212260"
 
 WORKDIR /opt/kafka_${SCALA_VERSION}-${KAFKA_VERSION}
 
-COPY ./startup ./startup
+COPY ./start_kafka.sh ./start_kafka.sh
 COPY ./gen-ssl-certs.sh ./gen-ssl-certs.sh
 
-RUN chmod +x ./startup \
+RUN chmod +x ./start_kafka.sh \
     && chmod +x ./gen-ssl-certs.sh \
     && wget -O kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz https://mirrors.tuna.tsinghua.edu.cn/apache/kafka/${KAFKA_VERSION}/kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz \
     && tar zxvf kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz \
@@ -27,4 +27,4 @@ COPY ./server.properties ./config/server.properties
 EXPOSE 9092
 EXPOSE 9091
 
-ENTRYPOINT [ "bash", "./startup" ]
+ENTRYPOINT [ "bash", "./start_kafka.sh" ]
