@@ -9,30 +9,30 @@
 # https://cwiki.apache.org/confluence/display/KAFKA/Deploying+SSL+for+Kafka
 #
 
-#¹ú¼Ò´úÂë
+#å›½å®¶ä»£ç 
 C=CN
-#Ê¡/ÊĞ
+#çœ/å¸‚
 ST=SC
-#³ÇÊĞ/ÇøÓò
+#åŸå¸‚/åŒºåŸŸ
 L=CD
-#×éÖ¯ĞĞÒµ
+#ç»„ç»‡è¡Œä¸š
 O=Development
-#×éÖ¯µ¥Î»
+#ç»„ç»‡å•ä½
 OU=CH
-#ÓÃ»§Ãû
+#ç”¨æˆ·å
 CN="$1"
 
-#Ö¤ÊéÃÜÂë
+#è¯ä¹¦å¯†ç 
 PASS="$2"
 
-#Ö¤ÊéÓĞĞ§Ê±¼ä(Ìì)
+#è¯ä¹¦æœ‰æ•ˆæ—¶é—´(å¤©)
 VALIDITY=10000
 
 set -e
 
 export LC_ALL=C
 
-if [[ ! -z "$CN" && ! -z "$PASS" ]]; then
+if [[ -n "$CN" && -n "$PASS" ]]; then
 
     if [ ! -d "./server/" ];then
         mkdir ./server/

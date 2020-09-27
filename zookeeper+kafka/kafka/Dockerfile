@@ -1,19 +1,30 @@
 FROM java
 
-WORKDIR /opt
+ARG SCALA_VERSION=2.12
+ARG KAFKA_VERSION=2.6.0
+ARG SSL_CN="kafka"
+ARG SSL_PASS="kafka@212260"
 
-COPY ./kafka_2.12-2.6.0.tgz .
+WORKDIR /opt/kafka_${SCALA_VERSION}-${KAFKA_VERSION}
 
-COPY ./startup /bin/startup
+COPY ./startup ./startup
+COPY ./gen-ssl-certs.sh ./gen-ssl-certs.sh
 
-RUN chmod +x /bin/startup \
-    && tar zxvf kafka_2.12-2.6.0.tgz \
-    && chmod -R +x ./kafka_2.12-2.6.0/bin \
-    && rm -f kafka_2.12-2.6.0.tgz
+RUN chmod +x ./startup \
+    && chmod +x ./gen-ssl-certs.sh \
+    && wget -O kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz https://mirrors.tuna.tsinghua.edu.cn/apache/kafka/${KAFKA_VERSION}/kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz \
+    && tar zxvf kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz \
+    && mv kafka_${SCALA_VERSION}-${KAFKA_VERSION}/* . \
+    && rm -rf kafka_${SCALA_VERSION}-${KAFKA_VERSION} \
+    && chmod -R +x ./bin \
+    && rm -f kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz \
+    && ./gen-ssl-certs.sh ${SSL_CN} ${SSL_PASS} \
+    && mkdir /ssl \
+    && mv ./server/* /ssl
 
-COPY ./server.properties /opt/kafka_2.12-2.6.0/config/server.properties
+COPY ./server.properties ./config/server.properties
 
 EXPOSE 9092
 EXPOSE 9091
 
-CMD startup
+ENTRYPOINT [ "bash", "./startup" ]

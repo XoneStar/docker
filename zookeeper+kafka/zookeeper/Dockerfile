@@ -1,14 +1,16 @@
 FROM java
 
-WORKDIR /opt
+ARG ZOOKEEPER_VERSION=3.6.2
 
-COPY ./apache-zookeeper-3.6.2-bin.tar.gz .
+WORKDIR /opt/apache-zookeeper-${ZOOKEEPER_VERSION}
 
-RUN tar zxvf apache-zookeeper-3.6.2-bin.tar.gz \
-    && mv apache-zookeeper-3.6.2-bin apache-zookeeper-3.6.2 \
-    && chmod -R 755 apache-zookeeper-3.6.2/ \
-    && cp apache-zookeeper-3.6.2/conf/zoo_sample.cfg apache-zookeeper-3.6.2/conf/zoo.cfg \
-    && rm -f apache-zookeeper-3.6.2-bin.tar.gz
+RUN wget -O apache-zookeeper-${ZOOKEEPER_VERSION}-bin.tar.gz https://mirrors.tuna.tsinghua.edu.cn/apache/zookeeper/zookeeper-${ZOOKEEPER_VERSION}/apache-zookeeper-${ZOOKEEPER_VERSION}-bin.tar.gz \
+    && tar zxvf apache-zookeeper-${ZOOKEEPER_VERSION}-bin.tar.gz \
+    && mv apache-zookeeper-${ZOOKEEPER_VERSION}-bin/* . \
+    && rm -rf apache-zookeeper-${ZOOKEEPER_VERSION}-bin \
+    && chmod -R 755 . \
+    && cp conf/zoo_sample.cfg conf/zoo.cfg \
+    && rm -f apache-zookeeper-${ZOOKEEPER_VERSION}-bin.tar.gz
 
 EXPOSE 2181
-CMD [ "bash", "/opt/apache-zookeeper-3.6.2/bin/zkServer.sh", "start-foreground", "/opt/apache-zookeeper-3.6.2/conf/zoo.cfg" ]
+ENTRYPOINT [ "bash", "./bin/zkServer.sh", "start-foreground", "./conf/zoo.cfg" ]
