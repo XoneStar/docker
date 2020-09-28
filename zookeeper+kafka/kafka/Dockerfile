@@ -1,4 +1,4 @@
-FROM java
+FROM java as kafka-build
 
 ARG SCALA_VERSION=2.12
 ARG KAFKA_VERSION=2.6.0
@@ -8,21 +8,28 @@ ARG SSL_PASS="kafka@212260"
 WORKDIR /opt/kafka_${SCALA_VERSION}-${KAFKA_VERSION}
 
 COPY ./start_kafka.sh ./start_kafka.sh
-COPY ./gen-ssl-certs.sh ./gen-ssl-certs.sh
+COPY ./gen-ssl-certs.sh /ssl/gen-ssl-certs.sh
 
 RUN chmod +x ./start_kafka.sh \
-    && chmod +x ./gen-ssl-certs.sh \
-    && wget -O kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz https://mirrors.tuna.tsinghua.edu.cn/apache/kafka/${KAFKA_VERSION}/kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz \
-    && tar zxvf kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz \
-    && mv kafka_${SCALA_VERSION}-${KAFKA_VERSION}/* . \
-    && rm -rf kafka_${SCALA_VERSION}-${KAFKA_VERSION} \
+    && wget -O /tmp/kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz https://mirrors.tuna.tsinghua.edu.cn/apache/kafka/${KAFKA_VERSION}/kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz \
+    && tar zxvf /tmp/kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz -C /tmp \
+    && mv /tmp/kafka_${SCALA_VERSION}-${KAFKA_VERSION}/* . \
     && chmod -R +x ./bin \
-    && rm -f kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz \
-    && ./gen-ssl-certs.sh ${SSL_CN} ${SSL_PASS} \
-    && mkdir /ssl \
-    && mv ./server/* /ssl
+    && chmod +x /ssl/gen-ssl-certs.sh \
+    && cd /ssl \
+    && ./gen-ssl-certs.sh ${SSL_CN} ${SSL_PASS}
 
 COPY ./server.properties ./config/server.properties
+
+FROM openjdk:8-jre-slim
+
+ARG SCALA_VERSION=2.12
+ARG KAFKA_VERSION=2.6.0
+
+WORKDIR /opt/kafka_${SCALA_VERSION}-${KAFKA_VERSION}
+
+COPY --from=kafka-build /opt /opt
+COPY --from=kafka-build /ssl /ssl
 
 EXPOSE 9092
 EXPOSE 9091
