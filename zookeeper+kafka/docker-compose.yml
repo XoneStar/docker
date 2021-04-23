@@ -1,28 +1,30 @@
-zookeeper:
-  image: zookeeper
-  container_name: zookeeper
-  log_driver: json-file
-  log_opt:
-    max-size: "500m"
-  ports:
-    - "2181:2181"
-  restart: always
+version: '3'
+services:
+  zookeeper:
+    image: zookeeper
+    container_name: zookeeper
+    log_driver: json-file
+    log_opt:
+      max-size: "500m"
+    ports:
+      - "2181:2181"
+    restart: always
 
-kafka:
-  image: kafka
-  container_name: "kafka"
-  log_driver: json-file
-  log_opt:
-    max-size: "500m"
-  restart: always
-  links:
-    - zookeeper
-  ports:
-    - "9092:9092"
-    - "9091:9091"
-  volumes:
-    - /etc/localtime:/etc/localtime:ro
-  environment:
-    - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
-    - KAFKA_ENV_KAFKA_ADVERTISED_HOST_NAME=x.x.x.x
-    - KAFKA_ENV_KAFKA_ADVERTISED_PORT=9092
+  kafka:
+    image: kafka
+    container_name: "kafka"
+    log_driver: json-file
+    log_opt:
+      max-size: "500m"
+    restart: always
+    links:
+      - zookeeper
+    ports:
+      - "9092:9092"
+      - "9091:9091"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_ENV_KAFKA_ADVERTISED_HOST_NAME=x.x.x.x
+      - KAFKA_ENV_KAFKA_ADVERTISED_PORT=9092

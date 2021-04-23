@@ -1,0 +1,17 @@
+version: '3'
+services:
+  mongo:
+    image: mongo:3.6
+    container_name: "mongo"
+    restart: always
+    log_driver: json-file
+    log_opt:
+      max-size: "500m"
+    ports:
+      - "27017:27017"
+    command: --auth
+    volumes:
+      - /data/mongo/data/db:/data/db
+      - /data/mongo/data/configdb:/data/configdb
+      - ./mongo-entrypoint/:/docker-entrypoint-initdb.d/
+      - /etc/localtime:/etc/localtime:ro
